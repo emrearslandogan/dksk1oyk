@@ -3,12 +3,22 @@ Bu repo dksk1 websitesi için geliştirme aşamasında yazılmış kodları içe
 not: login kısmında geçici bir kod var, database'de en az bir tane member kayıtlı olduğu sürece şifre mail fark etmeksizin giriş başarılı oluyor ama tabi session user i falan yok.
 
 # Projeyi başlatmak için #
-1) Proje paketinin içerisinde (dksk1 klasörü) terminali açtıktan sonra database oluşturmak için:
+1) Öncelikle şu kütüphanelerin hepsi indirilmiş olmalı, hepsi pip ile indirilebiliyor
+```
+flask
+flask_wtf
+email_validator
+flask_bcrypt
+flask_login
+forex_python
+```
+
+2) Proje paketinin içerisinde (dksk1 klasörü) terminali açtıktan sonra database oluşturmak için:
 ```
 from dksk1 import db
 from dksk1.models import Member, Activity
 db.create_all()
 ```
 
-2)   ```python run.py```    
+3)   ```python run.py```    
 Localhostta direkt başlar. 
