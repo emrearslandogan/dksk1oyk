@@ -17,18 +17,13 @@ def get_year():
 class Member(UserMixin, db.Model):   # SQLAlchemy databasei oop tipi araçlarla yönetmemize olanak tanır. Burada kullanıcılar için bir model oluşturduk ve bunların özelliklerini ekledik.
   id = db.Column(db.Integer, primary_key = True) # it means that the main thing we will look for in a element is it's id (bcs it is primary key)
   username = db.Column(db.String, unique = True, nullable = False)  # username i sistem otomatik atacayacak. ascii standartında isimler+soyisim+giriş yılının son iki hanesi şeklinde. Yani emrearslandogan22 olacak. 
-  # TODO burada dropdown menü olacak name surname oradan çekilecek
-  #name = db.Column(db.String(20), unique = False, nullable = False)
-  #surname = db.Column(db.String(20), unique = False, nullable = False)
+  name = db.Column(db.String(20), unique = False, nullable = False)
+  surname = db.Column(db.String(20), unique = False, nullable = False)
   email = db.Column(db.String(120), unique = True, nullable = False)
   tel_no = db.Column(db.String, unique = True, nullable = False)  # zaten site üstünden sms atma imkanı falan olmadığı için string olarak depoluyoruz. 
   giris_yili = db.Column(db.Integer, unique = False, nullable = False, default= datetime.now().year)  # kişinin kola giriş yılı. Değer verilmemişse hesabın oluşturulduğu yıl.
-  password = db.Column(db.String, nullable = False)  # şifre şu anda düzyazı şeklinde depolanıyor. şifresini unutana mail gidecek direkt.
+  password = db.Column(db.String, nullable = False)  
   
-  # TODO relationship işleri bundan anlayan biri bulup yaptırılacak
-  #teknik_sorumluluklari = db.relationship('Activity', backref='teknik_sorumlusu', lazy=True, foreign_keys='Activity.teknik_sorumlu_id')
-  #responsible_activities = db.relationship('Activity', backref='etkinlik_sorumlusu', lazy=True, foreign_keys='Activity.etkinlik_sorumlu_id')
-
   def __repr__(self):
     return f"Üye('{self.username}','{self.tel_no}')"  # bu satır biz databasei query den direkt çekmek istediğimizde nasıl gözükeceğini gösteriyor.  
 
@@ -37,14 +32,9 @@ class Activity(db.Model):    # topluluk bünyesinde gidilen etkinlikler için ya
   starting_date = db.Column(db.DateTime, nullable = False, default = datetime.utcnow())   # etkinlik için tarih verilmezse bugün gidilmiş şeklinde alınır.
   ending_date = db.Column(db.DateTime, nullable = False, default = datetime.utcnow())   
   location = db.Column(db.String, nullable = False, default = "Ankara")
-  ## TODO etkinlik raporu için yer eklenecek
-  malzeme_sorumlusu = db.Column(db.String, nullable = True, default = "OYK")  # TODO buraya default olarak aktif yk ları yazdır
-  
-  #teknik_sorumlu_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable = False)  # burada relationship kullanacağız. Yani user modelinden bir elemanı direkt buraya bağlayacağız
-  #etkinlik_sorumlu_id = db.Column(db.Integer, db.ForeignKey("member.id"), nullable = False)  # es ve ts için one-to many relationship kullandık. Çünkü bir etkinliğin sadece bir ts'si veya es si olur. ms yi farklı yazacağız çünkü birden fazla ms oluyor.
-
-  #teknik_sorumlu = db.relationship('Member', foreign_keys=[teknik_sorumlu_id])
-  #etkinlik_sorumlu = db.relationship('Member', foreign_keys=[etkinlik_sorumlu_id])
+  malzeme_sorumlu = db.Column(db.PickleType, nullable = False, default=["DKSK OYK"])
+  etkinlik_sorumlu = db.Column(db.PickleType, nullable = False, default=["DKSK OYK"])
+  teknik_sorumlu = db.Column(db.PickleType, nullable = False, default=["DKSK OYK"])
 
   def __repr__(self):
     return f"Etkinlik('{self.location}', '{self.date}')"
@@ -110,7 +100,7 @@ def yk_db_isle(yk_liste):
     dk2=get_dict_by_tag(yk_liste, "dk2"), 
     dk3=get_dict_by_tag(yk_liste, "dk3"))
     
-  db.session.add()
+  db.session.add(donem)
   db.session.commit()
 
 

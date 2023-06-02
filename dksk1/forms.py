@@ -11,6 +11,9 @@ class RegistrationForm (FlaskForm):
 
   # TODO buraya dropdown menü eklenecek oyk tarafından eklenip daha hesap oluşturmamış kişilerin listesi olacak.
   
+  name = StringField("İsim", validators=[DataRequired()])
+  surname = StringField("Soyisim", validators=[DataRequired()])
+
   email = StringField("Email", validators=[DataRequired(), Email()])
   
   tel_no = StringField("Telefon Numaranız", validators=[DataRequired()])

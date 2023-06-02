@@ -5,7 +5,7 @@
 from dksk1 import app, db, bcrypt, login_manager
 from flask import render_template, url_for, flash, redirect
 from dksk1.models import Member, Activity
-from dksk1.forms import RegistrationForm, LoginForm, recoveryForm
+from dksk1.forms import RegistrationForm, LoginForm, RecoveryForm
 from flask_login import login_user
 
 # Site için route oluşturma işi
@@ -26,7 +26,7 @@ def registrationPage():
     try:
       hashed_pw = bcrypt.generate_password_hash(form.password.data)
       kullanici_adi = str(form.email.data)[:form.email.data.index("@")] + form.giris_yili.data[2:] # baştan @ olan kısma kadar maili ve giris yılının son iki hanesini alıp username yapıyor
-      user = Member(username=kullanici_adi, email = form.email.data, tel_no = form.tel_no.data, giris_yili = form.giris_yili.data, password = hashed_pw)  # user i database a kaydetmek için oluşturduk
+      user = Member(name= form.name.data, surname = form.surname.data, username=kullanici_adi, email = form.email.data, tel_no = form.tel_no.data, giris_yili = form.giris_yili.data, password = hashed_pw)  # user i database a kaydetmek için oluşturduk
       db.session.add(user)
       db.session.commit()
       flash(f"{kullanici_adi} kullanıcı adlı hesap başarıyla oluşturuldu!, giriş yapabilirsiniz", "success")
@@ -40,43 +40,26 @@ def registrationPage():
 
 @app.route("/login", methods=["GET", "POST"])
 def loginPage():
-  # TODO Logini sonraya bıraktım. Şu anda db de bir kişi kayıtlı olduğu müddetçe direkt girebiliyorsunuz. Projenin daha hızlı ilerleyebilmesi için böyle yaptım. 
-
   form = LoginForm()
+
   if form.validate_on_submit():
-    user = Member.query.get(1)
-    login_user(user)
-    flash("Giriş başarılı", "success")
-    return redirect(url_for("startPage"))
+    if form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
+      user = Member.query.filter_by(email=str(form.email_or_username.data)).first()
+      if bcrypt.check_password_hash(user.password, str(form.password.data)) :
+        login_user(user)
+        flash("Giriş başarılı", "success")
+        return redirect(url_for("startPage"))
+      else:
+        flash("Giriş başarısız, bir daha deneyiniz", "warning")
 
-
-    """  Bu kısım login-db kodu işte
-    try: 
-      if form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
-        user = Member.query.filter_by(username=str(form.email_or_username.data)).first()
-        flash(user.tel_no, "warning")
-        if check_password_hash(user.password, str(form.password.data)) :
-          login_user(user)
-          flash("Giriş başarılı", "success")
-          return redirect(url_for("startPage"))
-        else:
-          flash("Giriş başarısız, bir daha deneyiniz", "warning")
-
-
-      elif form.email_or_username.data.find("@") == -1:  # giriş için kullanıcı adı kullanıldıysa
-        user = Member.query.filter_by(email=str(form.email_or_username.data)).first()
-        flash(user.tel_no, "warning")
-        if bcrypt.check_password_hash(user.password, str(form.password.data)):
-          login_user(user)
-          flash("Giriş başarılı", "success")
-          return redirect(url_for("startPage"))
-        else:
-          flash("Giriş başarısız, bir daha deneyiniz", "warning")
-    
-    except Exception as e:
-      flash(e, "danger")
-      flash("Bir hata oluştu, bir daha deneyiniz. Devam ederse SAK ile iletişime geçiniz", "warning")
-  """
+    elif form.email_or_username.data.find("@") == -1:  # giriş için kullanıcı adı kullanıldıysa
+      user = Member.query.filter_by(username=str(form.email_or_username.data)).first()
+      if bcrypt.check_password_hash(user.password, str(form.password.data)):
+        login_user(user)
+        flash("Giriş başarılı", "success")
+        return redirect(url_for("startPage"))
+      else:
+        flash("Giriş başarısız, bir daha deneyiniz", "warning")
 
   return render_template("loginPage.html", title="login", form=form)
 
