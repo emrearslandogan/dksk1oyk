@@ -17,5 +17,6 @@ app.app_context().push()  # app_context() sağlanmadan database kullanılmıyor.
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
+login_manager.login_view = "loginPage"  # Bunu ekleme sebebimiz login_required routelarda eğer giriş yapılmamış ise kullanıcıyı logine yönlendirmek. Tırnak içinde yazan kısım login fonksiyonunun adı.
 
 from dksk1 import routes # sonda import ettik çünkü öteki türlü circular importa sebep olurdu

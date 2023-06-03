@@ -6,7 +6,7 @@ from dksk1 import app, db, bcrypt, login_manager
 from flask import render_template, url_for, flash, redirect
 from dksk1.models import Member, Activity
 from dksk1.forms import RegistrationForm, LoginForm, RecoveryForm
-from flask_login import login_user
+from flask_login import login_user, logout_user, current_user, login_required
 
 # Site için route oluşturma işi
  
@@ -21,6 +21,9 @@ def startPage():
 
 @app.route("/register", methods=["GET", "POST"])
 def registrationPage():
+  if current_user.is_authenticated:  # eğer kullanıcı giriş yapmışsa ve buraya tekrar erişmeye çalışırsa, homepage e gönderilir
+    flash("Halihazırda giriş yapıldı", "info")
+    return redirect(url_for("startPage"))
   form = RegistrationForm() # burada forms.py dan bir instance oluşturduk bunu da html renderera geçireceğiz  
   if form.validate_on_submit():
     try:
@@ -40,28 +43,45 @@ def registrationPage():
 
 @app.route("/login", methods=["GET", "POST"])
 def loginPage():
+  if current_user.is_authenticated:  # eğer kullanıcı giriş yapmışsa ve buraya tekrar erişmeye çalışırsa, homepage e gönderilir
+    flash("Halihazırda giriş yapıldı", "info")
+    return redirect(url_for("startPage"))
   form = LoginForm()
+  try: 
+    if form.validate_on_submit():
+      if  form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
+        user = Member.query.filter_by(email=str(form.email_or_username.data)).first()
+        if user and bcrypt.check_password_hash(user.password, str(form.password.data)) :
+          login_user(user, remember=form.remember.data)
+          flash("Giriş başarılı", "success")
+          return redirect(url_for("startPage"))
+        else:
+          flash("Giriş başarısız, bir daha deneyiniz", "warning")
 
-  if form.validate_on_submit():
-    if form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
-      user = Member.query.filter_by(email=str(form.email_or_username.data)).first()
-      if bcrypt.check_password_hash(user.password, str(form.password.data)) :
-        login_user(user)
-        flash("Giriş başarılı", "success")
-        return redirect(url_for("startPage"))
-      else:
-        flash("Giriş başarısız, bir daha deneyiniz", "warning")
-
-    elif form.email_or_username.data.find("@") == -1:  # giriş için kullanıcı adı kullanıldıysa
-      user = Member.query.filter_by(username=str(form.email_or_username.data)).first()
-      if bcrypt.check_password_hash(user.password, str(form.password.data)):
-        login_user(user)
-        flash("Giriş başarılı", "success")
-        return redirect(url_for("startPage"))
-      else:
-        flash("Giriş başarısız, bir daha deneyiniz", "warning")
-
+      elif form.email_or_username.data.find("@") == -1:  # giriş için kullanıcı adı kullanıldıysa
+        user = Member.query.filter_by(username=str(form.email_or_username.data)).first()
+        if user and bcrypt.check_password_hash(user.password, str(form.password.data)):
+          login_user(user, remember=form.remember.data)
+          flash("Giriş başarılı", "success")
+          return redirect(url_for("startPage"))
+        else:
+          flash("Giriş başarısız, bir daha deneyiniz", "warning")
+  except Exception as e:
+    flash(e, "danger")
+    flash("Bir hata oluştu, girdiğiniz bilgileri kontrol ederek bir daha deneyiniz. Eğer hata devam ederse SAK ile iletişime geçiniz.", "warning")
+  
   return render_template("loginPage.html", title="login", form=form)
+
+@app.route("/logout")
+def logoutPage():
+  logout_user()
+  flash("Başarıyla çıkış yapıldı", "success")
+  return redirect(url_for("startPage"))
+
+@app.route("/profile")
+@login_required
+def profilePage():
+  return render_template("profile.html", title="profile")
 
 
 @app.route("/recovery", methods=["GET", "POST"])
@@ -71,6 +91,7 @@ def recoveryPage():
     flash(f"Hesabınız varsa, {form.email.data} mailine şifreniz gönderildi", "success")
     return redirect(url_for("loginPage"))
   return render_template("recoveryPage.html", title="login", form=form)
+
 
 
 

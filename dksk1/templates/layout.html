@@ -30,10 +30,17 @@
             <a class="nav-item nav-link" href="{{ url_for('startPage') }}">Ana Sayfa</a>
           </div>
           <!-- Navbar Right Side -->
-          <div class="navbar-nav">
-            <a class="nav-item nav-link" href="/login">Giriş Yap</a>
-            <a class="nav-item nav-link" href="/register">Kayıt Ol</a>
-          </div>
+          {% if current_user.is_authenticated%}
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="{{ url_for('profilePage') }}">Profil</a>
+              <a class="nav-item nav-link" href="{{ url_for('logoutPage') }}">Çıkış Yap</a>
+            </div>
+          {% else %}
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="{{ url_for('loginPage') }}">Giriş Yap</a>
+              <a class="nav-item nav-link" href="{{ url_for('registrationPage') }}">Kayıt Ol</a>
+            </div>
+          {% endif %}
         </div>
       </div>
     </nav>
