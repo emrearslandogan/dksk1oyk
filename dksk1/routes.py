@@ -5,7 +5,7 @@
 from dksk1 import app, db, bcrypt, login_manager
 from flask import render_template, url_for, flash, redirect
 from dksk1.models import Member, Activity, YK_Listesi
-from dksk1.forms import RegistrationForm, LoginForm, EditContact
+from dksk1.forms import RegistrationForm, LoginForm, EditContact, UpdatePassword
 from flask_login import login_user, logout_user, current_user, login_required
 
 # Site için route oluşturma işi
@@ -89,14 +89,35 @@ def profileeditPage():
   form = EditContact()
   if form.validate_on_submit():
     user = Member.query.get(current_user.id)
-    if form.email:
+    if form.email.data:
       user.email = form.email.data
-    if form.tel_no:
+    if form.tel_no.data:  # boş bırakılırsa iş karışmasın diye
       user.tel_no = form.tel_no.data
     db.session.commit()
 
+    if not (form.tel_no.data and form.email.data):  # yani ne email ne tel no değiştirilmediyse
+      flash("Hiçbir şey değiştirilmedi", "info")
+      return redirect(url_for("profilePage"))
+
+    flash("Bilgileriniz başarıyla güncellendi!", "success")
+    return redirect(url_for("profilePage"))
+
   return render_template("profileeditPage.html", title="edit", form=form)
 
+@app.route("/updatepassword", methods=["GET", "POST"])
+@login_required
+def updatepasswordPage():
+  form = UpdatePassword()
+  if form.validate_on_submit:
+    user = Member.query.get(current_user.id)
+    if form.desired_password.data:
+      user.password = bcrypt.generate_password_hash(form.desired_password.data)
+      db.session.commit()
+
+      flash("Şifreniz başarıyla değiştirildi!", "success")
+      return redirect(url_for("profilePage"))
+
+  return render_template("passwordchangePage.html", title="password change", form=form)
 
 @app.route("/recovery")
 def recoveryPage():

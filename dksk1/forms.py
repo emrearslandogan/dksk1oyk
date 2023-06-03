@@ -7,11 +7,9 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from dksk1.models import Member  # İmportalamazsak kendi yazdığımız validator fonksiyonlar çalışmaz
 from flask_login import current_user
+from dksk1 import bcrypt
 
 class RegistrationForm (FlaskForm): 
-
-  # TODO buraya dropdown menü eklenecek oyk tarafından eklenip daha hesap oluşturmamış kişilerin listesi olacak.
-  
   name = StringField("İsim", validators=[DataRequired()])
   surname = StringField("Soyisim", validators=[DataRequired()])
 
@@ -50,14 +48,24 @@ class EditContact (FlaskForm):
   email = StringField("Email")
   if current_user:
     email.default = current_user.email
-  submitEmail = SubmitField("Email bilgisini güncelle")
 
   tel_no = StringField("Telefon Numarası")
   if current_user:
     tel_no.default = current_user.tel_no
-  submitTel_no = SubmitField("Telefon numarası bilgisini güncelle")
+
+  submit = SubmitField("Formu Onayla")
   
 
+class UpdatePassword (FlaskForm):
+  current_password = PasswordField("Şu anki şifreniz", validators=[DataRequired(), Length(min=4, max=20)])
+  
+  desired_password = PasswordField("Yeni şifreniz", validators=[DataRequired(), Length(min=4, max=20)])
+  confirm_password = PasswordField("Yeni şifreyi doğrulayın", validators=[DataRequired(), EqualTo("desired_password")])
 
+  submit = SubmitField("Şifreyi güncelle")
 
+  def validate_current_password(self, current_password):
+    user = Member.query.get(current_user.id)
+    if not bcrypt.check_password_hash(bcrypt.generate_password_hash(current_password.data).decode('utf-8'), str(user.password.data)):  
+      raise ValidationError("Girdiğiniz eski şifre sizin şifreniz değil")
 
