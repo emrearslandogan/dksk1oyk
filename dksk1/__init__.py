@@ -18,5 +18,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "loginPage"  # Bunu ekleme sebebimiz login_required routelarda eğer giriş yapılmamış ise kullanıcıyı logine yönlendirmek. Tırnak içinde yazan kısım login fonksiyonunun adı.
+login_manager.login_message = "Henüz giriş yapmadınız"
+login_manager.login_message_category = "info" # buranın varlığının sebebi de login_required yerlerden logine yollarken, verilen mesajın içeriğini ve kategorisini değiştirmek.
 
 from dksk1 import routes # sonda import ettik çünkü öteki türlü circular importa sebep olurdu

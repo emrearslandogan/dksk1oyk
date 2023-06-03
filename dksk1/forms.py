@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from dksk1.models import Member  # İmportalamazsak kendi yazdığımız validator fonksiyonlar çalışmaz
+from flask_login import current_user
 
 class RegistrationForm (FlaskForm): 
 
@@ -40,34 +41,23 @@ class RegistrationForm (FlaskForm):
 
 class LoginForm (FlaskForm):  
   email_or_username = StringField("Emailiniz veya Kullanıcı Adınız", validators=[DataRequired()])
-
   password = PasswordField("Şifre", validators=[DataRequired(), Length(max=20)]) # minimum için bir validator koyamadık çünkü eski hesaplarda şifreler daha kısa hep
-
   submit = SubmitField("Giriş Yap")
-
-  remember = BooleanField("Remember Me")
-
-
-class RecoveryForm(FlaskForm):
-  email = StringField("Hesabınıza bağlı mail adresiniz", validators=[DataRequired(), Email()])
-
-  submit = SubmitField("Mail Gönder")
+  remember = BooleanField("Beni hatırla")
 
 
-class Yeni_ykForm(FlaskForm):
-  pass
+class EditContact (FlaskForm):
+  email = StringField("Email")
+  if current_user:
+    email.default = current_user.email
+  submitEmail = SubmitField("Email bilgisini güncelle")
 
-
-class Yeni_donem(FlaskForm):
-  donem = StringField("Dönemin yılları (örn: 2021-2022)", validators=[DataRequired()])
+  tel_no = StringField("Telefon Numarası")
+  if current_user:
+    tel_no.default = current_user.tel_no
+  submitTel_no = SubmitField("Telefon numarası bilgisini güncelle")
   
-  aktifmi = BooleanField("Dönem aktif mi?")
 
-
-class Yk_kaldir(FlaskForm):
-  ### donem = TODO buraya dropdown şeklinde dönemler eklenecek
-  
-  submit = SubmitField("Dönem Kaldır")
 
 
 

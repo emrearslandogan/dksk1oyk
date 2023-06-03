@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block bodyContent %}
+
+  {}
+  <table>
+    <tr>
+      <td>OYK</td>
+      <td>DYK 1</td>
+      <td>DYK 2</td>
+      <td>Muko Kayak</td>
+      <td>Kuzey Kayak</td>
+      <td>BK 1</td>
+      <td>BK 2</td>
+      <td>DK 1</td>
+      <td>DK 2</td>
+      <td>DK 3</td>
+    </tr>
+    
+    <tr>
+      <td>{{ yklist.oyk.["name"] }}</td>
+      <td>{{ yklist.dyk1.["name"] }}</td>
+      <td>{{ yklist.dyk2.["name"] }}</td>
+      <td>{{ yklist.kykmuko.["name"] }}</td>
+      <td>{{ yklist.kykkuzey.["name"] }}</td>
+      <td>{{ yklist.bk1.["name"] }}</td>
+      <td>{{ yklist.bk2.["name"] }}</td>
+      <td>{{ yklist.dk1.["name"] }}</td>
+      <td>{{ yklist.dk2.["name"] }}</td>
+      <td>{{ yklist.dk3.["name"] }}</td>
+    </tr>
+
+    <tr>
+      <td>{{ yklist.oyk.["surname"]] }}</td>
+      <td>{{ yklist.dyk1.["surname"] }}</td>
+      <td>{{ yklist.dyk2.["surname"] }}</td>
+      <td>{{ yklist.kykmuko.["surname"] }}</td>
+      <td>{{ yklist.kykkuzey.["surname"] }}</td>
+      <td>{{ yklist.bk1.["surname"] }}</td>
+      <td>{{ yklist.bk2.["surname"] }}</td>
+      <td>{{ yklist.dk1.["surname"] }}</td>
+      <td>{{ yklist.dk2.["surname"] }}</td>
+      <td>{{ yklist.dk3.["surname"] }}</td>
+    </tr>
+
+    <tr>
+      <td>{{ yklist.oyk["email"] }}</td>
+      <td>{{ yklist.dyk1["email"] }}</td>
+      <td>{{ yklist.dyk2["email"] }}</td>
+      <td>{{ yklist.kykmuko["email"] }}</td>
+      <td>{{ yklist.kykkuzey["email"] }}</td>
+      <td>{{ yklist.bk1["email"] }}</td>
+      <td>{{ yklist.bk2["email"] }}</td>
+      <td>{{ yklist.dk1["email"] }}</td>
+      <td>{{ yklist.dk2["email"] }}</td>
+      <td>{{ yklist.dk3["email"] }}</td>
+    </tr>
+
+    <tr>
+      <td>{{ yklist.oyk["tel_no"] }}</td>
+      <td>{{ yklist.dyk1["tel_no"] }}</td>
+      <td>{{ yklist.dyk2["tel_no"] }}</td>
+      <td>{{ yklist.kykmuko["tel_no"] }}</td>
+      <td>{{ yklist.kykkuzey["tel_no"] }}</td>
+      <td>{{ yklist.bk1["tel_no"] }}</td>
+      <td>{{ yklist.bk2["tel_no"] }}</td>
+      <td>{{ yklist.dk1["tel_no"] }}</td>
+      <td>{{ yklist.dk2["tel_no"] }}</td>
+      <td>{{ yklist.dk3["tel_no"] }}</td>
+    </tr>
+
+  </table>
+
+{% endblock bodyContent %}

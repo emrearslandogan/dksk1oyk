@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block bodyContent %}
+<div class="content-section">  <!-- classes are all imported from main.css-->
+  <form method="POST" action=""> <!-- method is what it does, we will allow POST methods later in the main python program, action will stay empty-->
+     {{ form.hidden_tag() }}  <!-- is about security. you don't need to deal with it -->
+     <fieldset class="form-group"> 
+       <legend class="border-bottom mb-4">Giriş Yap</legend>
+       <div class="form-group">
+        {{ form.email.label(class="form-control-label") }} 
+
+        {% if form.email.errors %}     
+        {{ form.email(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.email.errors %}
+            <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        {{ form.email(class="form-control form-control-lg") }}
+        {% endif %}
+
+       </div>
+
+       <div class="form-group">
+        {{ form.submitEmail(class="btn btn-outline-info") }} 
+        </div>
+
+       <div class="form-group">
+         {{ form.tel_no.label(class="form-control-label") }} 
+         
+         {% if form.tel_no.errors %}     
+         {{ form.tel_no(class="form-control form-control-lg is-invalid") }}
+           <div class="invalid-feedback">
+             {% for error in form.tel_no.errors %}
+               <span>{{ error }}</span>
+             {% endfor %}
+           </div>
+
+         {% else %}
+           {{ form.tel_no(class="form-control form-control-lg") }}
+         {% endif %}
+
+       </div>
+       <div class="form-group">
+        {{ form.submitTel_no(class="btn btn-outline-info") }} 
+      </div>
+     </fieldset>
+  </form>
+</div>
+
+
+{% endblock bodyContent %}

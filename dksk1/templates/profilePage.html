@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block bodyContent %}
+  <h2> <b>{{ current_user.username }}</b> kullanıcı adlı üyenin profili </h1>
+  
+  <br>
+
+  <h4><b>İsim:</b> {{ userinfo.name }}</h4>
+  <h4><b>Soyisim:</b> {{ userinfo.surname }}</h4>
+  <h4><b>Email Adresi:</b> {{ userinfo.email }}</h4>
+  <h4><b>Telefon Numarası:</b> {{ userinfo.tel_no }}</h4>
+  <h4><b>Kola Giriş Yılı:</b> {{ userinfo.giris_yili }}</h4>
+
+  <a href="{{ url_for('profileeditPage') }}">İletişim Bilgilerinizi Güncelleyin</a>
+
+
+{% endblock bodyContent %}

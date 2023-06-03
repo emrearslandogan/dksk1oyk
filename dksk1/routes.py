@@ -4,14 +4,12 @@
 
 from dksk1 import app, db, bcrypt, login_manager
 from flask import render_template, url_for, flash, redirect
-from dksk1.models import Member, Activity
-from dksk1.forms import RegistrationForm, LoginForm, RecoveryForm
+from dksk1.models import Member, Activity, YK_Listesi
+from dksk1.forms import RegistrationForm, LoginForm, EditContact
 from flask_login import login_user, logout_user, current_user, login_required
 
 # Site için route oluşturma işi
  
-
-
 
 @app.route("/")
 @app.route("/home")
@@ -49,7 +47,7 @@ def loginPage():
   form = LoginForm()
   try: 
     if form.validate_on_submit():
-      if  form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
+      if form.email_or_username.data.find("@") != -1: # yani giriş için email kullanıldıysa
         user = Member.query.filter_by(email=str(form.email_or_username.data)).first()
         if user and bcrypt.check_password_hash(user.password, str(form.password.data)) :
           login_user(user, remember=form.remember.data)
@@ -72,26 +70,61 @@ def loginPage():
   
   return render_template("loginPage.html", title="login", form=form)
 
+
 @app.route("/logout")
 def logoutPage():
   logout_user()
   flash("Başarıyla çıkış yapıldı", "success")
   return redirect(url_for("startPage"))
 
+
 @app.route("/profile")
 @login_required
 def profilePage():
-  return render_template("profile.html", title="profile")
+  return render_template("profilePage.html", title="profile", userinfo= current_user)
 
-
-@app.route("/recovery", methods=["GET", "POST"])
-def recoveryPage():
-  form = recoveryForm()
+@app.route("/profileedit", methods=["GET", "POST"])
+@login_required
+def profileeditPage():
+  form = EditContact()
   if form.validate_on_submit():
-    flash(f"Hesabınız varsa, {form.email.data} mailine şifreniz gönderildi", "success")
-    return redirect(url_for("loginPage"))
-  return render_template("recoveryPage.html", title="login", form=form)
+    user = Member.query.get(current_user.id)
+    if form.email:
+      user.email = form.email.data
+    if form.tel_no:
+      user.tel_no = form.tel_no.data
+    db.session.commit()
+
+  return render_template("profileeditPage.html", title="edit", form=form)
 
 
+@app.route("/recovery")
+def recoveryPage():
+  flash("Şifrenizi unuttuysanız lütfen yk ile iletişime geçiniz", "warning")
+  return redirect(url_for("contactPage"))
 
+
+"""
+@app.route("/contact")
+def contactPage():
+  yklist = []
+  yklar = YK_Listesi.query.first()
+
+  for yk in yklar:
+    yklist.append({
+      "donem": yklar.donem,
+      "oyk": yklar.oyk,
+      "dyk1": yklar.dyk1,
+      "dyk2": yklar.dyk2,
+      "kykmuko": yklar.kykmuko,
+      "kykkuzey": yklar.kykkuzey,
+      "bk1": yklar.bk1,
+      "bk2": yklar.bk2,
+      "dk1": yklar.dk1,
+      "dk2": yklar.dk2,
+      "dk3": yklar.dk3
+    })
+
+  return render_template("contactPage.hmtl", title="contact", yklist = yklist)
+"""
 
